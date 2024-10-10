@@ -1,2 +1,2 @@
-# spring-boot-jdbc-estudos
-Repositorio para estudos de projetos Spring Boot com JDBC
+# Teste prático
+Back-end Java
