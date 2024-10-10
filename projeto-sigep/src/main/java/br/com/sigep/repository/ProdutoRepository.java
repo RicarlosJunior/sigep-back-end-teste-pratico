@@ -124,7 +124,16 @@ public class ProdutoRepository {
 		return produto;
 	}
 	
-	
+	public void atualziarQuatidadeDisponivelProduto(Integer quantidade, Integer id, String operacao) {
+		String sql = "";
+		if(operacao.equals("+")) {
+			sql = "UPDATE produto SET quantidade_disponivel = quantidade_disponivel + ? WHERE id = ?";
+		}else if(operacao.equals("-")) {
+			sql = "UPDATE produto SET quantidade_disponivel = quantidade_disponivel - ? WHERE id = ?";
+		}
+		this.jdbcTemplate.update(sql, quantidade, id);
+		
+	}
 	
 	private boolean existeVendaCadastradaParaProduto(Integer produtoId) {
 		final String sql = "SELECT COUNT(*) FROM venda_produto WHERE produto_id = ? ";

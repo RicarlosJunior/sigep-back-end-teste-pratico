@@ -17,6 +17,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleProdutoException(ProdutoException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
+    
+    @ExceptionHandler(VendaException.class)
+    public ResponseEntity<String> handleVendaException(VendaException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 
    
     @ExceptionHandler(Throwable.class)

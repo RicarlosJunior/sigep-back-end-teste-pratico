@@ -1,6 +1,7 @@
 package br.com.sigep.repository;
 
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,13 +11,16 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import br.com.sigep.model.Produto;
 import br.com.sigep.model.Venda;
+import br.com.sigep.model.VendaProduto;
 
 @Repository
 public class VendaRepository {
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
+	
 	
 	public Venda criar(Venda venda) {
 		try {
@@ -85,6 +89,7 @@ public class VendaRepository {
 			final String sql = "DELETE FROM venda WHERE id = ?";
 			resultado = (this.jdbcTemplate.update(sql, id) > 0);
 			
+			
         } catch (DataAccessException e) {
             throw new RuntimeException("Erro ao excluir venda ", e);
         }
@@ -96,19 +101,58 @@ public class VendaRepository {
 	public Venda consultar(Integer id) {
 		Venda venda = null;
 		try {
-			final String sql = "SELECT id, cliente, valor_total FROM produto WHERE id = ?";
+			
+			final String sql = "SELECT id, cliente, valor_total FROM venda WHERE id = ?";
+			
 			venda = this.jdbcTemplate.queryForObject(sql, (rs, linha) -> {
 				Venda vendaResultado = new Venda();
 				vendaResultado.setId(rs.getInt("id"));
 				vendaResultado.setCliente(rs.getString("cliente"));
 				vendaResultado.setValorTotal(rs.getBigDecimal("valor_total"));
+				vendaResultado.setVendaProdutos(new ArrayList<>());
 				return vendaResultado;
 			}, id); 
+			
+			
+			if(venda != null) {
+				venda.setVendaProdutos(consultarVendaProduto(venda.getId()));
+			}
 			
         } catch (DataAccessException e) {
             throw new RuntimeException("Erro ao consultar venda ", e);
         }
 		return venda;
+	}
+	
+	
+	private List<VendaProduto> consultarVendaProduto(Integer vendaId){
+		 List<VendaProduto> vendaProdutros = null;
+		try {
+			
+			final String sql = "SELECT vp.quantidade, vp.venda_id, vp.produto_id, p.nome, p.descricao, p.quantidade_disponivel, p.valor_unitario "
+					+ " FROM venda_produto vp "
+					+ " INNER JOIN produto p ON vp.produto_id = p.id "
+					+ " WHERE vp.venda_id = ?";
+
+				vendaProdutros = this.jdbcTemplate.query(sql, (rs, linha) -> {
+							VendaProduto vendaProduto = new VendaProduto();
+							vendaProduto.setQuantidade(rs.getInt("quantidade"));
+							vendaProduto.setVenda(new Venda());
+							vendaProduto.getVenda().setId(rs.getInt("venda_id"));
+							vendaProduto.setProduto(new Produto());
+							vendaProduto.getProduto().setId(rs.getInt("produto_id"));
+							vendaProduto.getProduto().setNome(rs.getString("nome"));
+							vendaProduto.getProduto().setDescricao(rs.getString("descricao"));
+							vendaProduto.getProduto().setQuantidadeDisponivel(rs.getInt("quantidade_disponivel"));
+							vendaProduto.getProduto().setValorUnitario(rs.getBigDecimal("valor_unitario"));
+							return vendaProduto;
+						}); 
+			
+			
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Erro ao consultar venda ", e);
+        }
+		return vendaProdutros;
 	}
 	
 }
