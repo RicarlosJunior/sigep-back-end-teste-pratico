@@ -1,11 +1,13 @@
 package br.com.sigep.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.sigep.exception.ProdutoException;
 import br.com.sigep.model.Produto;
 import br.com.sigep.repository.ProdutoRepository;
 
@@ -17,9 +19,9 @@ public class ProdutoService {
 	
 	@Transactional
 	public Produto criar(Produto produto) throws RuntimeException{
-		if(produto.getQuantidadeDisponivel() <= 0) {
-			throw new IllegalArgumentException("Campo quantidade disponível inválido!");
-		}
+		
+		validarCamposProduto(produto);
+		
 		return produtoRepository.criar(produto);
 	}
 	
@@ -39,7 +41,7 @@ public class ProdutoService {
 		if(sucesso) {
 			return "Registro excluido com sucesso!";
 		}else {
-			return "Não foi possivel realizar essa operação!";
+			throw new ProdutoException("Não foi possivel realizar essa operação!");
 		}
 	}
 	
@@ -48,4 +50,17 @@ public class ProdutoService {
 		return produtoRepository.consultar(id);
 	}
 	
+	//Existe validação no front-end, mas por segurança é feito uma validação tambem no back-end
+	private void validarCamposProduto(Produto produto) {
+		if(produto.getNome() == null || produto.getNome().isBlank()) {
+			throw new ProdutoException("Campo nome inválido!");
+		}
+		if(produto.getQuantidadeDisponivel() == null || produto.getQuantidadeDisponivel() <= 0) {
+			throw new ProdutoException("Campo quantidade disponível inválido!");
+		}
+		if(produto.getValorUnitario() == null || produto.getValorUnitario().compareTo(BigDecimal.ZERO) <= 0) {
+			throw new ProdutoException("Campo valor unitario inválido!");
+		}
+	}
+
 }

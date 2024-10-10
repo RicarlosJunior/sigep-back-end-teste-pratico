@@ -55,5 +55,4 @@ public class ProdutoController {
 	public ResponseEntity<Produto> consultar(@PathVariable Integer id)  {
 		return ResponseEntity.ok(produtoService.consultar(id));
 	}
-	
 }

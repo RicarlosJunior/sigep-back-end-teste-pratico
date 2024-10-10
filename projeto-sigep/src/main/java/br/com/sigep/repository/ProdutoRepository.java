@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import br.com.sigep.exception.ProdutoException;
 import br.com.sigep.model.Produto;
 
 @Repository
@@ -89,7 +90,7 @@ public class ProdutoRepository {
 		try {
 			
 			if(existeVendaCadastradaParaProduto(id)) {
-				throw new RuntimeException("Produto não pode ser excluido pois está vinculado a uma venda!");
+				throw new ProdutoException("Produto não pode ser excluido pois está vinculado a uma venda!");
 			}
 			
 			final String sql = "DELETE FROM produto WHERE id = ?";
