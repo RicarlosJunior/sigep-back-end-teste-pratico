@@ -102,6 +102,29 @@ public class ProdutoRepository {
 	}
 	
 	
+	
+	public Produto consultar(Integer id) {
+		Produto produto = null;
+		try {
+			final String sql = "SELECT id, nome, descricao, quantidade_disponivel, valor_unitario FROM produto WHERE id = ?";
+			produto = this.jdbcTemplate.queryForObject(sql, (rs, linha) -> {
+				Produto produtoResultado = new Produto();
+				produtoResultado.setId(rs.getInt("id"));
+				produtoResultado.setNome(rs.getString("nome"));
+				produtoResultado.setDescricao(rs.getString("descricao"));
+				produtoResultado.setQuantidadeDisponivel(rs.getInt("quantidade_disponivel"));
+				produtoResultado.setValorUnitario(rs.getBigDecimal("valor_unitario"));
+				return produtoResultado;
+			}, id); 
+			
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Erro ao consultar produto ", e);
+        }
+		return produto;
+	}
+	
+	
+	
 	private boolean existeVendaCadastradaParaProduto(Integer produtoId) {
 		final String sql = "SELECT COUNT(*) FROM venda_produto WHERE produto_id = ? ";
 		Integer qtdVendaProduto = this.jdbcTemplate.queryForObject(sql, Integer.class, produtoId);

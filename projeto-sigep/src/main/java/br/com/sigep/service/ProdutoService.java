@@ -17,6 +17,9 @@ public class ProdutoService {
 	
 	@Transactional
 	public Produto criar(Produto produto) throws RuntimeException{
+		if(produto.getQuantidadeDisponivel() <= 0) {
+			throw new IllegalArgumentException("Campo quantidade disponível inválido!");
+		}
 		return produtoRepository.criar(produto);
 	}
 	
@@ -31,8 +34,18 @@ public class ProdutoService {
 	}
 	
 	@Transactional
-	public boolean excluir(Integer id) throws RuntimeException {
-		return produtoRepository.excluir(id);
+	public String excluir(Integer id) throws RuntimeException {
+		boolean sucesso = produtoRepository.excluir(id);
+		if(sucesso) {
+			return "Registro excluido com sucesso!";
+		}else {
+			return "Não foi possivel realizar essa operação!";
+		}
+	}
+	
+	@Transactional(readOnly = true)
+	public Produto consultar(Integer id) throws RuntimeException {
+		return produtoRepository.consultar(id);
 	}
 	
 }
