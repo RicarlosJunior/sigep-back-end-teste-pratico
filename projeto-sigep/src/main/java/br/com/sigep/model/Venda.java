@@ -4,11 +4,15 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Venda {
 
 	private Integer id;
 	private String cliente;
+	@JsonProperty("valor_total")
 	private BigDecimal valorTotal;
+	@JsonProperty("venda_produtos")
 	private List<VendaProduto> vendaProdutos;
 	
 	

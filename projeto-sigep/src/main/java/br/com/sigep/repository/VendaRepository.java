@@ -146,7 +146,7 @@ public class VendaRepository {
 							vendaProduto.getProduto().setQuantidadeDisponivel(rs.getInt("quantidade_disponivel"));
 							vendaProduto.getProduto().setValorUnitario(rs.getBigDecimal("valor_unitario"));
 							return vendaProduto;
-						}); 
+						}, vendaId); 
 			
 			
         } catch (DataAccessException e) {

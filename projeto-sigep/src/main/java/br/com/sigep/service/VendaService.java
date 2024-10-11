@@ -79,11 +79,11 @@ public class VendaService {
 		//Devolve a quantidade disponivel para tb produto
 		devolverQuatidadeDisponivelProduto(id);
 		
+		vendaProdutoRepository.excluir(id);
+		 
 		boolean sucesso = vendaRepository.excluir(id);
 		
 		if(sucesso) {
-			
-			vendaProdutoRepository.excluir(id);
 			
 			return "Registro excluido com sucesso!";
 			
