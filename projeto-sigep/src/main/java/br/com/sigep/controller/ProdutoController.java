@@ -20,7 +20,7 @@ import br.com.sigep.service.ProdutoService;
 
 @RestController
 @RequestMapping("/produtos")
-@CrossOrigin("*") //Obs esta assim por estar em faze de desenvolvimento
+@CrossOrigin("*") //Obs faze de desenvolvimento
 public class ProdutoController {
 
 	@Autowired

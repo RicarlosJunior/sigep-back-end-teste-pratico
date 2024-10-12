@@ -29,7 +29,7 @@ public class ProdutoService {
 	public Produto alterar(Integer id, Produto produto) throws RuntimeException {
 		
 		//Verifica se o registro exite
-		if(consultar(id) == null) {
+		if(produtoRepository.consultar(id) == null) {
 			throw new ProdutoException("Produto não encontrado!");
 		}
 		

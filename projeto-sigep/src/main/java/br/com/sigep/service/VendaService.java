@@ -48,7 +48,7 @@ public class VendaService {
 	public Venda alterar(Integer id, Venda venda) throws RuntimeException {
 		
 		//Verifica se o registro exite
-		if(consultar(id) == null) {
+		if(vendaRepository.consultar(id) == null) {
 			throw new VendaException("Venda não encontrada!");
 		}
 		
@@ -81,7 +81,7 @@ public class VendaService {
 	@Transactional
 	public String excluir(Integer id) throws RuntimeException {
 		
-		//Devolve a quantidade disponivel para tb produto
+		//Devolve a quantidade disponivel para tabela produto
 		devolverQuatidadeDisponivelProduto(id);
 		
 		vendaProdutoRepository.excluir(id);
