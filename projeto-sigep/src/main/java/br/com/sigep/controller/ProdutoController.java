@@ -20,7 +20,7 @@ import br.com.sigep.service.ProdutoService;
 
 @RestController
 @RequestMapping("/produtos")
-@CrossOrigin("*") //Obs faze de desenvolvimento
+@CrossOrigin("*") //desenvolvimento
 public class ProdutoController {
 
 	@Autowired

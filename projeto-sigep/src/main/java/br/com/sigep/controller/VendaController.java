@@ -20,7 +20,7 @@ import br.com.sigep.service.VendaService;
 
 @RestController
 @RequestMapping("/vendas")
-@CrossOrigin("*") //Obs esta assim por estar em faze de desenvolvimento
+@CrossOrigin("*") //desenvolvimento
 public class VendaController {
 
 	@Autowired
