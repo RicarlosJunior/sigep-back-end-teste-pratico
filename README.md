@@ -39,5 +39,5 @@ CREATE TABLE venda_produto (
   CONSTRAINT fk_venda FOREIGN KEY (venda_id) REFERENCES venda (id)
 )engine=InnoDB default charset=utf8;
 ```
-
+Obs: as configurações de datasource estão no arquivo application.properties do projeto.
 
