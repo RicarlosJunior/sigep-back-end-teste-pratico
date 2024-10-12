@@ -26,7 +26,13 @@ public class ProdutoService {
 	}
 	
 	@Transactional
-	public Produto alterar(Produto produto) throws RuntimeException {
+	public Produto alterar(Integer id, Produto produto) throws RuntimeException {
+		
+		//Verifica se o registro exite
+		if(consultar(id) == null) {
+			throw new ProdutoException("Produto não encontrado!");
+		}
+		
 		return produtoRepository.alterar(produto);
 	}
 	
@@ -50,7 +56,7 @@ public class ProdutoService {
 		return produtoRepository.consultar(id);
 	}
 	
-	//Existe validação no front-end, mas por segurança é feito uma validação tambem no back-end
+	//Existe validação no front-end, mas por segurança é feito as mesmas validaçoes tambem no back-end
 	private void validarCamposProduto(Produto produto) {
 		if(produto.getNome() == null || produto.getNome().isBlank()) {
 			throw new ProdutoException("Campo nome inválido!");

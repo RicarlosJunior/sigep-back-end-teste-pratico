@@ -29,7 +29,7 @@ public class VendaService {
 	@Transactional
 	public Venda criar(Venda venda) throws RuntimeException{
 		
-		//Por segurança valida os compos de acordo com a regra de negoico
+		//Por segurança alem das validações do frontend validamos no back-end, com base nas regras de negocio
 		validarCamposVenda(venda);
 		
 		//Cria a venda
@@ -38,16 +38,21 @@ public class VendaService {
 		//Cria o relacionamento de venda e produto
 		vendaProdutoRepository.criar(venda);
 		
-		//Baixa a quantidade disponivel na tb produto
+		//Baixa a quantidade disponivel na tabela produto
 		baixarQuatidadeDisponivelProduto(venda);
 		
 		return venda;
 	}
 	
 	@Transactional
-	public Venda alterar(Venda venda) throws RuntimeException {
+	public Venda alterar(Integer id, Venda venda) throws RuntimeException {
 		
-		//Por segurança valida os compos de acordo com a regra de negoico
+		//Verifica se o registro exite
+		if(consultar(id) == null) {
+			throw new VendaException("Venda não encontrada!");
+		}
+		
+		//Por segurança alem das validações do frontend validamos no back-end, com base nas regras de negocio
 		validarCamposVenda(venda);
 		
 		//Para evitar furos devolve a quantidade disponivel do registro antes da alteração
@@ -120,7 +125,7 @@ public class VendaService {
 		
 	}
 	
-	//Existe validação no front-end, mas por segurança é feito uma validação tambem no back-end
+	//Existe validação no front-end, mas por segurança é feito as mesmas validaçoes tambem no back-end
 	private void validarCamposVenda(Venda venda) {
 		if(venda.getCliente() == null || venda.getCliente().isBlank()) {
 			throw new VendaException("Campo cliente inválido!");
@@ -129,13 +134,13 @@ public class VendaService {
 			throw new VendaException("Campo valor total inválido!");
 		}
 		if(venda.getVendaProdutos() == null || venda.getVendaProdutos().size() == 0) {
-			throw new VendaException("Para gerar uma venda e necessario informar ao menos um produto!");
+			throw new VendaException("Para gerar/alterar uma venda é necessario informar ao menos um produto!");
 		}
 		if(venda.getVendaProdutos().stream().anyMatch(vp -> vp.getQuantidade() <= 0)) {
-			throw new VendaException("Existe produto sem quantidade informada!");
+			throw new VendaException("Existe produto(s) com quantidade informada inválida!");
 		}
 		if(venda.getVendaProdutos().stream().anyMatch(vp -> vp.getQuantidade() > vp.getProduto().getQuantidadeDisponivel())) {
-			throw new VendaException("Existe produto com a quantidade informada, maior que o saldo disponivel para venda!");
+			throw new VendaException("Existe produto(s) com a quantidade informada, maior que o saldo disponivel para venda!");
 		}
 	}
 }
