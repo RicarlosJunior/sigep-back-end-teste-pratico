@@ -36,8 +36,8 @@ public class VendaController {
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<Venda> alterar(@PathVariable Integer id, @RequestBody Venda venda) {
-		Venda vendaAlterda = vendaService.alterar(id, venda);
-		return ResponseEntity.ok(vendaAlterda);
+		Venda vendaAlterada = vendaService.alterar(id, venda);
+		return ResponseEntity.ok(vendaAlterada);
 	}
 	
 	

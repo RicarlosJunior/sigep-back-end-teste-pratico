@@ -25,21 +25,20 @@ public class VendaService {
 	@Autowired
 	private ProdutoRepository produtoRepository;
 	
+	private final static String SOMAR_QTDE_DISPONIVEL = "+";
+	private final static String SUBTRAIR_QTDE_DISPONIVEL = "-";
+	
 	
 	@Transactional
 	public Venda criar(Venda venda) throws RuntimeException{
 		
-		//Por segurança alem das validações do frontend validamos no back-end, com base nas regras de negocio
 		validarCamposVenda(venda);
 		
-		//Cria a venda
 		venda = vendaRepository.criar(venda);
-		
-		//Cria o relacionamento de venda e produto
+	
 		vendaProdutoRepository.criar(venda);
 		
-		//Baixa a quantidade disponivel na tabela produto
-		baixarQuatidadeDisponivelProduto(venda);
+		atualizarQuantidadeDisponivelProduto(venda, SUBTRAIR_QTDE_DISPONIVEL);
 		
 		return venda;
 	}
@@ -47,28 +46,27 @@ public class VendaService {
 	@Transactional
 	public Venda alterar(Integer id, Venda venda) throws RuntimeException {
 		
-		//Verifica se o registro exite
-		if(vendaRepository.consultar(id) == null) {
+		validarCamposVenda(venda);
+		
+		Venda vendaBD = vendaRepository.consultar(id);
+		
+		if(vendaBD == null) {
 			throw new VendaException("Venda não encontrada!");
 		}
 		
-		//Por segurança alem das validações do frontend validamos no back-end, com base nas regras de negocio
-		validarCamposVenda(venda);
+		//As duas ações a seguir sao para evitar furos
+		//primeiro é devolvido a quantidade disponivel de cada produto
+		//depois é feita a exclusão da relação venda - produto do antigo registro.
+		//representado pelo objeto vendaDB
+		atualizarQuantidadeDisponivelProduto(vendaBD, SOMAR_QTDE_DISPONIVEL);
 		
-		//Para evitar furos devolve a quantidade disponivel do registro antes da alteração
-		devolverQuatidadeDisponivelProduto(venda.getId());
+		vendaProdutoRepository.excluir(vendaBD.getId());
 		
-		//Excluir o relacionamento que existia antes da alteração entre venda e produto
-		vendaProdutoRepository.excluir(venda.getId());
+		vendaRepository.alterar(venda);
 		
-		//Faz a alteraçao na venda
-		venda = vendaRepository.alterar(venda);
-
-		//Cria novamente o relacionamento da venda e produto
 		vendaProdutoRepository.criar(venda);
 		
-		//Baixa a quantidade disponivel na tabela produto
-		baixarQuatidadeDisponivelProduto(venda);
+		atualizarQuantidadeDisponivelProduto(venda, SUBTRAIR_QTDE_DISPONIVEL);
 		
 		return venda;
 	}
@@ -81,8 +79,11 @@ public class VendaService {
 	@Transactional
 	public String excluir(Integer id) throws RuntimeException {
 		
-		//Devolve a quantidade disponivel para tabela produto
-		devolverQuatidadeDisponivelProduto(id);
+		Venda vendaBD = vendaRepository.consultar(id);
+		
+		if(vendaBD != null) {
+			atualizarQuantidadeDisponivelProduto(vendaBD, SOMAR_QTDE_DISPONIVEL);
+		}
 		
 		vendaProdutoRepository.excluir(id);
 		 
@@ -103,29 +104,16 @@ public class VendaService {
 	}
 	
 	
-	private void devolverQuatidadeDisponivelProduto(Integer id) {
-		
-		Venda vendaBD = vendaRepository.consultar(id);
-			
-		String operacao = "+"; //devolver a quantidade do produto
-		
-		vendaBD.getVendaProdutos().stream().forEach(vp ->
-			produtoRepository.atualziarQuatidadeDisponivelProduto(vp.getQuantidade(), vp.getProduto().getId(), operacao)
-		);
-		
+	
+	private void atualizarQuantidadeDisponivelProduto(Venda venda, String operacao) {
+	    venda.getVendaProdutos().forEach(vp -> 
+	        produtoRepository.atualizarQuantidadeDisponivel(vp.getQuantidade(), vp.getProduto().getId(), operacao)
+	    );
 	}
 	
-	private void baixarQuatidadeDisponivelProduto(Venda venda) {
-			
-		String operacao = "-"; //baixar a quantidade do produto
-		
-		venda.getVendaProdutos().stream().forEach(vp ->
-			produtoRepository.atualziarQuatidadeDisponivelProduto(vp.getQuantidade(), vp.getProduto().getId(), operacao)
-		);
-		
-	}
-	
-	//Existe validação no front-end, mas por segurança é feito as mesmas validaçoes tambem no back-end
+
+	//Existe validação no front-end, mas por segurança é feito 
+	//as mesmas validaçoes tambem no back-end
 	private void validarCamposVenda(Venda venda) {
 		if(venda.getCliente() == null || venda.getCliente().isBlank()) {
 			throw new VendaException("Campo cliente inválido!");

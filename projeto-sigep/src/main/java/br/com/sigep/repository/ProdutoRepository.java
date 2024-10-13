@@ -124,7 +124,7 @@ public class ProdutoRepository {
 		return produto;
 	}
 	
-	public void atualziarQuatidadeDisponivelProduto(Integer quantidade, Integer id, String operacao) {
+	public void atualizarQuantidadeDisponivel(Integer quantidade, Integer id, String operacao) {
 		String sql = "";
 		if(operacao.equals("+")) {
 			sql = "UPDATE produto SET quantidade_disponivel = quantidade_disponivel + ? WHERE id = ?";
