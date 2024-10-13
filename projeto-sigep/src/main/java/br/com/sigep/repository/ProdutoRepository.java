@@ -130,7 +130,9 @@ public class ProdutoRepository {
 			sql = "UPDATE produto SET quantidade_disponivel = quantidade_disponivel + ? WHERE id = ?";
 		}else if(operacao.equals("-")) {
 			sql = "UPDATE produto SET quantidade_disponivel = quantidade_disponivel - ? WHERE id = ?";
-		}
+		}else {
+            throw new ProdutoException("Não foi possível atualizar a quantidade disponivel do produto!");
+        }
 		this.jdbcTemplate.update(sql, quantidade, id);
 		
 	}
