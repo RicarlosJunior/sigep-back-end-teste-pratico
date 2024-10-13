@@ -49,7 +49,7 @@ public class ProdutoService {
 		if(sucesso) {
 			return "Registro excluido com sucesso!";
 		}else {
-			throw new ProdutoException("Não foi possivel realizar essa operação!");
+			return "Não foi possivel realizar essa operação!";
 		}
 	}
 	

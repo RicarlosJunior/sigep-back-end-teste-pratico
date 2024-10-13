@@ -11,6 +11,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import br.com.sigep.exception.VendaException;
 import br.com.sigep.model.Produto;
 import br.com.sigep.model.Venda;
 import br.com.sigep.model.VendaProduto;
@@ -40,7 +41,7 @@ public class VendaRepository {
 			venda.setId(keyHolder.getKey().intValue());
 			
         } catch (DataAccessException e) {
-            throw new RuntimeException("Erro ao inserir venda ", e);
+            throw new VendaException("Erro ao inserir venda");
         }
 		return venda;
 	}
@@ -57,7 +58,7 @@ public class VendaRepository {
 			
 			
         } catch (DataAccessException e) {
-            throw new RuntimeException("Erro ao alterar venda ", e);
+        	 throw new VendaException("Erro ao alterar venda");
         }
 		return venda;
 	}
@@ -77,7 +78,7 @@ public class VendaRepository {
 									}); 
 			
         } catch (DataAccessException e) {
-            throw new RuntimeException("Erro ao listar vendas ", e);
+        	 throw new VendaException("Erro ao listar vendas");
         }
 		return vendas;
 	}
@@ -91,7 +92,7 @@ public class VendaRepository {
 			
 			
         } catch (DataAccessException e) {
-            throw new RuntimeException("Erro ao excluir venda ", e);
+        	 throw new VendaException("Erro ao excluir venda");
         }
 		return resultado;
 	}
@@ -119,7 +120,7 @@ public class VendaRepository {
 			}
 			
         } catch (DataAccessException e) {
-            throw new RuntimeException("Erro ao consultar venda ", e);
+        	 throw new VendaException("Erro ao consultar venda");
         }
 		return venda;
 	}
@@ -150,7 +151,7 @@ public class VendaRepository {
 			
 			
         } catch (DataAccessException e) {
-            throw new RuntimeException("Erro ao consultar venda ", e);
+        	 throw new VendaException("Erro ao consultar venda - produto");
         }
 		return vendaProdutros;
 	}

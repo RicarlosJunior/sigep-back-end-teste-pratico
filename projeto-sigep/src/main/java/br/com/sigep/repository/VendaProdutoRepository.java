@@ -5,6 +5,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import br.com.sigep.exception.VendaException;
 import br.com.sigep.model.Venda;
 
 @Repository
@@ -26,7 +27,7 @@ public class VendaProdutoRepository {
 			});
 			
         } catch (DataAccessException e) {
-            throw new RuntimeException("Erro ao inserir venda_produto ", e);
+            throw new VendaException("Erro ao inserir venda_produto ");
         }
 	}
 	
@@ -38,7 +39,7 @@ public class VendaProdutoRepository {
 			resultado = (this.jdbcTemplate.update(sql, vendaId) > 0);
 			
         } catch (DataAccessException e) {
-            throw new RuntimeException("Erro ao excluir venda_produto ", e);
+            throw new VendaException("Erro ao excluir venda_produto ");
         }
 		return resultado;
 	}

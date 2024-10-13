@@ -39,7 +39,7 @@ public class ProdutoRepository {
 			produto.setId(keyHolder.getKey().intValue());
 			
         } catch (DataAccessException e) {
-            throw new RuntimeException("Erro ao inserir produto ", e);
+            throw new ProdutoException("Erro ao inserir produto");
         }
 		return produto;
 	}
@@ -58,7 +58,7 @@ public class ProdutoRepository {
 			
 			
         } catch (DataAccessException e) {
-            throw new RuntimeException("Erro ao alterar produto ", e);
+        	throw new ProdutoException("Erro ao alterar produto");
         }
 		return produto;
 	}
@@ -80,7 +80,7 @@ public class ProdutoRepository {
 									}); 
 			
         } catch (DataAccessException e) {
-            throw new RuntimeException("Erro ao listar produto ", e);
+        	throw new ProdutoException("Erro ao listar produto");
         }
 		return produtos;
 	}
@@ -97,7 +97,7 @@ public class ProdutoRepository {
 			resultado = (this.jdbcTemplate.update(sql, id) > 0);
 			
         } catch (DataAccessException e) {
-            throw new RuntimeException("Erro ao excluir produto ", e);
+        	throw new ProdutoException("Erro ao excluir produto");
         }
 		return resultado;
 	}
@@ -119,27 +119,42 @@ public class ProdutoRepository {
 			}, id); 
 			
         } catch (DataAccessException e) {
-            throw new RuntimeException("Erro ao consultar produto ", e);
+        	throw new ProdutoException("Erro ao consultar produto");
         }
 		return produto;
 	}
 	
 	public void atualizarQuantidadeDisponivel(Integer quantidade, Integer id, String operacao) {
-		String sql = "";
-		if(operacao.equals("+")) {
-			sql = "UPDATE produto SET quantidade_disponivel = quantidade_disponivel + ? WHERE id = ?";
-		}else if(operacao.equals("-")) {
-			sql = "UPDATE produto SET quantidade_disponivel = quantidade_disponivel - ? WHERE id = ?";
-		}else {
-            throw new ProdutoException("Não foi possível atualizar a quantidade disponivel do produto!");
+		try {
+			
+			String sql = "";
+			
+			if(operacao.equals("+")) {
+				sql = "UPDATE produto SET quantidade_disponivel = quantidade_disponivel + ? WHERE id = ?";
+			}else if(operacao.equals("-")) {
+				sql = "UPDATE produto SET quantidade_disponivel = quantidade_disponivel - ? WHERE id = ?";
+			}else {
+	            throw new ProdutoException("Não foi possível atualizar a quantidade disponivel do produto!");
+	        }
+			
+			this.jdbcTemplate.update(sql, quantidade, id);
+			
+		} catch (ProdutoException pe) {
+        	throw new ProdutoException(pe.getMessage());
+        } catch (DataAccessException e) {
+        	throw new ProdutoException("Erro ao atualizar atualizar a quantidade disponivel do produto!");
         }
-		this.jdbcTemplate.update(sql, quantidade, id);
-		
 	}
 	
 	private boolean existeVendaCadastradaParaProduto(Integer produtoId) {
-		final String sql = "SELECT COUNT(*) FROM venda_produto WHERE produto_id = ? ";
-		Integer qtdVendaProduto = this.jdbcTemplate.queryForObject(sql, Integer.class, produtoId);
-		return (qtdVendaProduto != null && qtdVendaProduto > 0);
+		try {
+			
+			final String sql = "SELECT COUNT(*) FROM venda_produto WHERE produto_id = ? ";
+			Integer qtdVendaProduto = this.jdbcTemplate.queryForObject(sql, Integer.class, produtoId);
+			return (qtdVendaProduto != null && qtdVendaProduto > 0);
+			
+		 } catch (DataAccessException e) {
+	        throw new ProdutoException("Erro ao verificar venda cadastrada por produto!");
+	     }
 	}
 }
