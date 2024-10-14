@@ -126,21 +126,16 @@ public class ProdutoRepository {
 	
 	public void atualizarQuantidadeDisponivel(Integer quantidade, Integer id, String operacao) {
 		try {
-			
-			String sql = "";
-			
-			if(operacao.equals("+")) {
-				sql = "UPDATE produto SET quantidade_disponivel = quantidade_disponivel + ? WHERE id = ?";
-			}else if(operacao.equals("-")) {
-				sql = "UPDATE produto SET quantidade_disponivel = quantidade_disponivel - ? WHERE id = ?";
+		
+			if(!operacao.equals("+") && !operacao.equals("-")) {
+				 throw new ProdutoException("Não foi possível atualizar a quantidade disponivel do produto!");
 			}else {
-	            throw new ProdutoException("Não foi possível atualizar a quantidade disponivel do produto!");
+				String sql = String.format("UPDATE produto SET quantidade_disponivel = quantidade_disponivel %s ? WHERE id = ?", operacao);
+				this.jdbcTemplate.update(sql, quantidade, id);
 	        }
 			
-			this.jdbcTemplate.update(sql, quantidade, id);
-			
 		} catch (ProdutoException pe) {
-        	throw new ProdutoException(pe.getMessage());
+        	throw pe;
         } catch (DataAccessException e) {
         	throw new ProdutoException("Erro ao atualizar atualizar a quantidade disponivel do produto!");
         }
